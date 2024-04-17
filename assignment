@@ -1,0 +1,35 @@
+pip install requests
+pip install beautifulsoup4
+import requests
+from bs4 import BeautifulSoup
+
+def get_survey_numbers(district, mandal, village):
+    url = "https://dharani.telangana.gov.in/knowLandStatus"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    data = {
+        "district": district,
+        "mandal": mandal,
+        "village": village
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find the survey numbers
+    survey_numbers = []
+    for option in soup.find("select", {"id": "ddSurveyNumber"}).find_all("option"):
+        survey_numbers.append(option.text.strip())
+
+    return survey_numbers
+
+# Example usage
+district = "YourDistrict"
+mandal = "YourMandal"
+village = "YourVillage"
+
+survey_numbers = get_survey_numbers(district, mandal, village)
+print("Survey Numbers:")
+for survey_number in survey_numbers:
+    print(survey_number)
